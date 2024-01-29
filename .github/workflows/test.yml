@@ -1,0 +1,46 @@
+name: Run tests and code checks
+
+on:
+  workflow_call:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  python_version: 3.12
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
+      - name: Use Python ${{ env.python_version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.python_version }}
+
+      - name: Install Python Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install project
+        run: |
+          poetry install
+
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Run tests
+        run: task test
+
+      - name: Run code checks
+        run: task code:check

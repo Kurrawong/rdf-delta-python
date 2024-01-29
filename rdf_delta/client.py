@@ -35,6 +35,7 @@ class DatasourceLogInfo(Datasource):
 
 class LogCreatedMetadata(BaseModel):
     """Patch log metadata for new creations."""
+
     version: int
     location: str
 
@@ -101,7 +102,9 @@ class DeltaClient:
         :return: Datasource object.
         """
 
-        raise NotImplementedError(f"Delta operation 'create_datasource' currently not supported.")
+        raise NotImplementedError(
+            f"Delta operation 'create_datasource' currently not supported."
+        )
 
         payload = {
             "opid": "",
@@ -141,10 +144,10 @@ class DeltaClient:
         :param patch_log: Patch log content.
         :param name: Datasource name.
         """
-        headers = {
-            "Content-Type": "application/rdf-patch"
-        }
-        response = self.client.post(self.url + f"{name}", content=patch_log, headers=headers)
+        headers = {"Content-Type": "application/rdf-patch"}
+        response = self.client.post(
+            self.url + f"{name}", content=patch_log, headers=headers
+        )
         if response.status_code != 200:
             raise DeltaServerError(
                 f"Delta server responded with error {response.status_code}: {response.text}"

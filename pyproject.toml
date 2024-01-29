@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "rdf-delta-python"
-version = "0.1.1"
+version = "0.2.0"
 description = "Python client and parser library for RDF Delta."
 authors = ["Edmond Chuc <edmond@kurrawong.ai>"]
 readme = "README.md"
 license = "MIT"
-packages = [{include = "rdf_delta_python"}]
+packages = [{include = "rdf_delta"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"

@@ -1,12 +1,14 @@
-import pytest
+from pathlib import Path
 
+import pytest
 from testcontainers.compose import DockerCompose
 
 from rdf_delta import DeltaClient
 
 DELTA_PORT = 9999
 FUSEKI_PORT = 9998
-compose = DockerCompose(".")
+filepath = Path(__file__).parent.resolve()
+compose = DockerCompose(str(filepath))
 
 
 @pytest.fixture(scope="module", autouse=True)
