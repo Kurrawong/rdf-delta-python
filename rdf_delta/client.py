@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import httpx
 from loguru import logger
 from pydantic import BaseModel, field_validator
@@ -29,6 +31,12 @@ class DatasourceLogInfo(Datasource):
     def convert_latest_id_value(cls, v: str):
         """Remove the id: prefix from the identifier value."""
         return v.split("id:")[-1]
+
+
+class LogCreatedMetadata(BaseModel):
+    """Patch log metadata for new creations."""
+    version: int
+    location: str
 
 
 class DeltaServerError(Exception):
@@ -63,6 +71,10 @@ class DeltaClient:
 
         return response.json()
 
+    def close(self):
+        """Close the delta client and perform cleanup routines."""
+        self.client.close()
+
     def list_datasource(self) -> list[str]:
         """Get a list of datasource identifiers.
 
@@ -82,16 +94,33 @@ class DeltaClient:
         datasources = [Datasource(**v) for v in data["array"]]
         return datasources
 
-    def describe_datasource(self, id_: str) -> Datasource:
-        """Get a datasource object description by identifier.
+    def create_datasource(self, name: str) -> Datasource:
+        """Create a new datasource.
 
-        :param id_: Datasource identifier.
+        :param name: Datasource name.
+        :return: Datasource object.
+        """
+
+        raise NotImplementedError(f"Delta operation 'create_datasource' currently not supported.")
+
+        payload = {
+            "opid": "",
+            "operation": "create_datasource",
+            "arg": {"name": name, "id": str(uuid4())},
+        }
+        data = self._fetch_rpc(payload)
+        return Datasource(**data)
+
+    def describe_datasource(self, name: str) -> Datasource:
+        """Get a datasource object description by name.
+
+        :param name: Datasource name.
         :return: Datasource object.
         """
         payload = {
             "opid": "",
             "operation": "describe_datasource",
-            "arg": {"datasource": id_},
+            "arg": {"name": name},
         }
         data = self._fetch_rpc(payload)
         return Datasource(**data)
@@ -105,3 +134,36 @@ class DeltaClient:
         payload = {"opid": "", "operation": "describe_log", "arg": {"datasource": id_}}
         data = self._fetch_rpc(payload)
         return DatasourceLogInfo(**data)
+
+    def create_log(self, patch_log: str, name: str) -> LogCreatedMetadata:
+        """Create a new patch log on a datasource.
+
+        :param patch_log: Patch log content.
+        :param name: Datasource name.
+        """
+        headers = {
+            "Content-Type": "application/rdf-patch"
+        }
+        response = self.client.post(self.url + f"{name}", content=patch_log, headers=headers)
+        if response.status_code != 200:
+            raise DeltaServerError(
+                f"Delta server responded with error {response.status_code}: {response.text}"
+            )
+
+        data = response.json()
+        return LogCreatedMetadata(**data)
+
+    def get_log(self, version: int, datasource: str) -> str:
+        """Get a patch log by version.
+
+        :param version: Patch log version.
+        :param datasource: Datasource name.
+        :return: Patch log content.
+        """
+        response = self.client.get(self.url + f"{datasource}/{version}")
+        if response.status_code != 200:
+            raise DeltaServerError(
+                f"Delta server responded with error {response.status_code}: {response.text}"
+            )
+
+        return response.text
