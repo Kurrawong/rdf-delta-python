@@ -22,4 +22,4 @@ tasks:
   test:
     desc: Run Python tests.
     cmds:
-      - poetry run pytest
+      - poetry run python -m pytest
