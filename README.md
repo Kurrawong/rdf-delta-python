@@ -1,5 +1,13 @@
 # RDF Delta Python
 
+## Installation
+
+Replace `<version>` with the latest GitHub release. You can browse the GitHub releases [here](https://github.com/Kurrawong/rdf-delta-python/releases).
+
+```shell
+pip install https://github.com/Kurrawong/rdf-delta-python/archive/refs/tags/<version>.zip
+```
+
 ## Client
 
 A Python client to interact with a Delta Server.
