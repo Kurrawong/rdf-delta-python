@@ -24,7 +24,7 @@ for id_ in ids:
 
 ```
 
-See the [DeltaClient](rdf_delta/client.py) class for all the possible methods.
+See the [DeltaClient](rdf_delta/client.py) class for all the possible methods and [test_delta_client.py](tests/delta_client/test_delta_client.py) for more in-depth usage such as adding new patch logs.
 
 ## RDF Patch Lark Parser
 
