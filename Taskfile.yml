@@ -1,0 +1,25 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  PACKAGE_NAME: rdf_delta
+
+tasks:
+  code:check:
+    desc: Check whether code formatting rules apply.
+    cmds:
+      - poetry run ruff format --check
+      - poetry run ruff check
+
+  code:
+    desc: Format and standardise code.
+    cmds:
+      - poetry run ruff format
+      - poetry run ruff --fix {{.PACKAGE_NAME}} tests
+
+
+  test:
+    desc: Run Python tests.
+    cmds:
+      - poetry run pytest
