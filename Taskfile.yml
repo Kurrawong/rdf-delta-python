@@ -2,9 +2,6 @@
 
 version: '3'
 
-vars:
-  PACKAGE_NAME: rdf_delta
-
 tasks:
   code:check:
     desc: Check whether code formatting rules apply.
@@ -16,7 +13,7 @@ tasks:
     desc: Format and standardise code.
     cmds:
       - poetry run ruff format
-      - poetry run ruff --fix {{.PACKAGE_NAME}} tests
+      - poetry run ruff --fix
 
 
   test:
