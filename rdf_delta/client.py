@@ -34,14 +34,23 @@ class DeltaServerError(Exception):
 
 
 class DeltaClient:
-    """Perform common operations against an RDF Delta Server."""
+    """Perform common operations against an RDF Delta Server.
+
+    The API interface is based on the documentation at https://afs.github.io/rdf-delta/delta-server-api.
+
+    :param base_url: The base URL of the Delta Server. Example, http://localhost:1066/.
+    """
     def __init__(self, base_url: str):
         url = base_url if base_url.endswith("/") else base_url + "/"
         self.url = url + "$/rpc"
         self.client = httpx.Client()
 
     def _fetch(self, payload: dict) -> dict:
-        """Helper function to send requests to the Delta server."""
+        """Helper function to send requests to the Delta server.
+
+        :param payload: The payload to send to the Delta server.
+        :return: The JSON response body from the Delta server.
+        """
         logger.debug(f"Sending {payload['operation']} operation to {self.url}")
         response = self.client.post(self.url, json=payload)
         if response.status_code != 200:
@@ -50,7 +59,10 @@ class DeltaClient:
         return response.json()
 
     def list_datasource(self) -> list[str]:
-        """Get a list of datasource identifiers."""
+        """Get a list of datasource identifiers.
+
+        :return: A list of datasource identifiers.
+        """
         payload = {
             "opid": "",
             "operation": "list_datasource",
@@ -60,7 +72,10 @@ class DeltaClient:
         return data["array"]
 
     def list_descriptions(self) -> list[Datasource]:
-        """Get a list of datasource object descriptions."""
+        """Get a list of datasource object descriptions.
+
+        :return: A list of datasource objects.
+        """
         payload = {
             "opid": "",
             "operation": "list_descriptions",
@@ -71,7 +86,11 @@ class DeltaClient:
         return datasources
 
     def describe_datasource(self, id_: str) -> Datasource:
-        """Get a datasource object description by identifier."""
+        """Get a datasource object description by identifier.
+
+        :param id_: Datasource identifier.
+        :return: Datasource object.
+        """
         payload = {
             "opid": "",
             "operation": "describe_datasource",
@@ -81,7 +100,11 @@ class DeltaClient:
         return Datasource(**data)
 
     def describe_log(self, id_: str) -> DatasourceLogInfo:
-        """Get a datasource log object description by identifier."""
+        """Get a datasource log object description by identifier.
+
+        :param id_: Datasource identifier.
+        :return: Datasource log object with additional information related to patch logs.
+        """
         payload = {
             "opid": "",
             "operation": "describe_log",
