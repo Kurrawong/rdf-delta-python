@@ -8,12 +8,12 @@ license = "MIT"
 packages = [{include = "rdf_delta"}]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.11,<4.0.0"
 httpx = "^0.26.0"
-rdflib = "^7.0.0"
-lark = "^1.1.9"
+rdflib = ">=7.0.0,<8.0.0"
+lark = ">=1.1.9,<2.0.0"
 loguru = "^0.7.2"
-pydantic = "^2.5.3"
+pydantic = ">=2.5.3,<3.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
